@@ -27,7 +27,7 @@ class Engine:
             return False
 
     def update_grid(self, guess: str) -> None:
-        """Update the current answer array by looping over the answer and comparing each character."""
+        """Update the grid by comparing the guess to the answer."""
 
         # Update in the case of an entire word guess
         if len(guess) > 1:
