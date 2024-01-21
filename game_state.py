@@ -1,4 +1,4 @@
-import hangman as hm
+import engine
 import random
 import csv
 from enum import Enum
@@ -16,15 +16,17 @@ class State(Enum):
     GAME_OVER = 8
 
 
-class Game:
+class GameState:
+
     def __init__(self):
         self.hangman = None
         self.state = None
 
     @staticmethod
     def get_random_word_from_dictionary() -> str:
+        """Retrieve a hangman word from an external file."""
         try:
-            with open("words.txt", newline="") as words:
+            with open("words.txt") as words:
                 reader = csv.reader(words)
 
                 word_list = list(reader)[0]
@@ -33,25 +35,22 @@ class Game:
 
         except FileNotFoundError:
             raise Exception(
-                "Words.txt not found. Ensure it is in the same directory as this file.")
+                "Words.txt not found. Ensure it is in the same directory as this file."
+            )
 
     def create_session(self) -> None:
-        self.hangman = hm.Hangman(self.get_random_word_from_dictionary())
+        self.hangman = engine.Engine(self.get_random_word_from_dictionary())
         self.state = State.MAIN_MENU
 
     def begin(self) -> None:
         self.state = State.WAITING_FOR_INPUT
 
     def make_guess(self, guess) -> None:
-        if not self.hangman.is_valid_letter_input(guess):
-            self.state = State.INVALID_INPUT
-            return
-
         if not self.hangman.is_unique_guess(guess):
             self.state = State.ALREADY_GUESSED
             return
 
-        if self.hangman.handle_letter_guess(guess):
+        if self.hangman.handle_guess(guess):
             self.state = State.CORRECT_GUESS
         else:
             self.state = State.INCORRECT_GUESS
@@ -67,14 +66,8 @@ class Game:
     def reset_state_to_waiting(self) -> None:
         self.state = State.WAITING_FOR_INPUT
 
+    def set_invalid_input(self) -> None:
+        self.state = State.INVALID_INPUT
+
     def end_game(self) -> None:
         self.state = State.GAME_OVER
-
-    def get_mistakes(self) -> int:
-        return self.hangman.mistakes
-
-    def get_grid(self) -> list:
-        return self.hangman.grid
-
-    def get_answer(self) -> str:
-        return self.hangman.answer
