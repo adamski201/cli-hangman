@@ -42,7 +42,7 @@ class ConsoleInterface(Renderer):
         elif game.state == State.WAITING_FOR_INPUT:
             self.print_current_status(game)
 
-            print("Enter a single character to make a guess: ")
+            print("Make a guess: ")
 
         elif game.state == State.CORRECT_GUESS:
             print("You guessed correctly!")
@@ -61,7 +61,6 @@ class ConsoleInterface(Renderer):
             self.print_current_status(game)
             time.sleep(1)
             print("You lose...")
-            print(1)
             print(f"The correct word was {game.hangman.answer}.")
 
         elif game.state == State.INVALID_INPUT:
